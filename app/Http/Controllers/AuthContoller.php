@@ -6,11 +6,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AuthContoller extends Controller
 {
     
     public function register(Request $request) {
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -27,7 +29,7 @@ class AuthContoller extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password
+            'password' => bcrypt($request->password)
         ]);
 
         $token = $user->createToken('AUTH_TOKEN')->plainTextToken;
@@ -107,6 +109,52 @@ class AuthContoller extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Email Sent'
+        ]);
+    }
+
+    public function user(Request $request) {
+        $user = $request->user();
+        return response()->json([
+            'status' => 200,
+            'user' => $user
+        ]);
+    }
+
+    public function resetPass(Request $request) {
+        $id = $request->user()->id;
+        User::find($id)->update([
+            'password' => bcrypt($request->password)
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Password Change Success'
+        ]);
+    }
+
+    public function userUpdate(Request $request) {
+        $id = $request->user()->id;
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => ['required', Rule::unique('users')->ignore($id, 'id')]
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                $validator->errors()
+                
+            ], 400);
+        }
+
+        User::find($id)->update([
+            'name' => $request->name,
+            'email' => $request->email
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'User Update Success'
         ]);
     }
 

@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-const email = ref("t@email.com");
+const email = ref("");
 const loadIng = ref(false);
 const send = ref(false);
 const errorMsg = ref("");
@@ -16,7 +16,6 @@ const resetPassword = (evt) => {
         email: email.value,
       })
       .then((res) => {
-        console.log("OLA", res);
         loadIng.value = false;
         send.value = true;
         alert(res.data.message);
@@ -79,7 +78,7 @@ const resetPassword = (evt) => {
                     </a>
                     <a
                       v-if="loadIng"
-                      class="btn btn-primary btn-user btn-block"
+                      class="btn btn-danger btn-user btn-block"
                     >
                       Waiting...
                     </a>

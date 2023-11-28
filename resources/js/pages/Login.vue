@@ -8,15 +8,14 @@ const user = ref({
 const login = (evt) => {
   evt.preventDefault();
   if (
-    user.email === "" ||
-    user.password === ""
+    user.value.email === "" ||
+    user.value.password === ""
   ) {
     alert("Please fill all fields")
   } else {
     axios
       .post("login", user.value)
       .then((resp) => {
-        console.log(resp)
         if (resp.data.status === 200) {
           localStorage.setItem("token", resp.data.access_token);
           localStorage.setItem("user", JSON.stringify(resp.data.user));
@@ -26,7 +25,7 @@ const login = (evt) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        alert(err.message);
       });
   }
 };

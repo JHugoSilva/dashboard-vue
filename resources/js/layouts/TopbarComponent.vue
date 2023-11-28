@@ -1,33 +1,36 @@
 <script setup>
 import { ref } from "vue";
 
-const toggled = ref('')
-const emit = defineEmits(['emitToggled'])
+const toggled = ref("");
+const emit = defineEmits(["emitToggled"]);
+const props = defineProps(["user"]);
 
 const sidebarToggleTop = () => {
-  if (toggled.value === '') {
-    toggled.value = 'toggled'
-    emit('emitToggled', toggled.value)
+  if (toggled.value === "") {
+    toggled.value = "toggled";
+    emit("emitToggled", toggled.value);
   } else {
-      toggled.value = ''
-      emit('emitToggled', toggled.value)
+    toggled.value = "";
+    emit("emitToggled", toggled.value);
   }
-}
+};
 
 const logout = () => {
-  axios.get('logout')
-  .then((resp) => {
-    console.log(resp)
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    window.location.href = '/login'
-  }).catch((err) => {
-    console.log(err)
-  })
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
-  window.location.href = '/login'
-}
+  axios
+    .get("logout")
+    .then((resp) => {
+      console.log(resp);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/login";
+};
 </script>
 
 <template>
@@ -37,7 +40,8 @@ const logout = () => {
     <!-- Sidebar Toggle (Topbar) -->
     <button
       id="sidebarToggleTop"
-      class="btn btn-link d-md-none rounded-circle mr-3" @click="sidebarToggleTop"
+      class="btn btn-link d-md-none rounded-circle mr-3"
+      @click="sidebarToggleTop"
     >
       <i class="fa fa-bars"></i>
     </button>
@@ -121,7 +125,7 @@ const logout = () => {
           class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
           aria-labelledby="alertsDropdown"
         >
-          <h6 class="dropdown-header">Alerts Center</h6>
+          <h6 class="dropdown-header">{{ props.user.name }}</h6>
           <a class="dropdown-item d-flex align-items-center" href="#">
             <div class="mr-3">
               <div class="icon-circle bg-primary">
@@ -272,9 +276,9 @@ const logout = () => {
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-            >Douglas McGee</span
-          >
+          <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{
+            props.user.name
+          }}</span>
           <img
             class="img-profile rounded-circle"
             src="img/undraw_profile.svg"
@@ -285,13 +289,14 @@ const logout = () => {
           class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
           aria-labelledby="userDropdown"
         >
-          <a class="dropdown-item" href="#">
-            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-            Profile
-          </a>
+          <router-link class="dropdown-item" to="profile"
+            >
+            <i class="fas fa-user-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            Profile</router-link
+          >
           <div class="dropdown-divider"></div>
           <a
-          href="#"
+            href="#"
             class="dropdown-item"
             @click="logout"
             data-toggle="modal"

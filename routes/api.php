@@ -16,11 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function(){
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-
+    Route::get('/user', [AuthContoller::class, 'user']);
     Route::get('/logout', [AuthContoller::class, 'logout']);
+    Route::post('/reset-pass', [AuthContoller::class, 'resetPass']);
+    Route::post('/user-update', [AuthContoller::class, 'userUpdate']);
 });
 
 Route::post('/reset-password', [AuthContoller::class, 'resetPassword']);

@@ -25,9 +25,19 @@ const router = createRouter({
             component: () => import('../pages/ForgotPassword.vue')
         },
         {
-            path: '/reset-passwordForm',
+            path: '/reset-password-form',
             name: 'ResetPasswordForm',
             component: () => import('../pages/ResetPasswordForm.vue')
+        },
+        {
+            path: '/profile',
+            name: 'Profile',
+            component: () => import('../pages/Profile.vue')
+        },
+        {
+            path: '/reset-password-form-sent',
+            name: 'ResetPasswordFormSent',
+            component: () => import('../pages/ResetPasswordFormSent.vue')
         },
         {
             path: '/:patchMatch(.*)*',

@@ -4,9 +4,14 @@ import SidebarComponent from '../layouts/SidbarComponent.vue'
 import TopbarComponent from '../layouts/TopbarComponent.vue'
 import FooterComponent from '../layouts/FooterComponent.vue'
 
-const toggled = ref('')
+const toggled = ref("")
 
 const token = localStorage.getItem('token')
+const user = ref("")
+
+axios.get('user').then((resp) => {
+    user.value = resp.data.user
+})
 
 </script>
 
@@ -25,13 +30,13 @@ const token = localStorage.getItem('token')
             <div id="content">
 
                 <!-- Topbar -->
-                <TopbarComponent v-if="token" @emitToggled="toggled=$event"/>
+                <TopbarComponent v-if="token" @emitToggled="toggled=$event" :user="user"/>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                   <router-view></router-view>
+                   <router-view :user="user"></router-view>
                 </div>
                 <!-- /.container-fluid -->
 
