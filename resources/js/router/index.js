@@ -20,6 +20,11 @@ const router = createRouter({
             component: () => import('../pages/Admin.vue')
         },
         {
+            path: '/users',
+            name: 'Users',
+            component: () => import('../pages/users/User.vue')
+        },
+        {
             path: '/forgot-password',
             name: 'ForgotPassword',
             component: () => import('../pages/ForgotPassword.vue')

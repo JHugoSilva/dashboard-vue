@@ -281,7 +281,7 @@ const logout = () => {
           }}</span>
           <img
             class="img-profile rounded-circle"
-            src="img/undraw_profile.svg"
+            :src="`../images/users/${props.user.photo}`"
           />
         </a>
         <!-- Dropdown - User Information -->

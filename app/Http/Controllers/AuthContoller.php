@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -10,7 +11,6 @@ use Illuminate\Validation\Rule;
 
 class AuthContoller extends Controller
 {
-    
     public function register(Request $request) {
 
         $validator = Validator::make($request->all(), [
@@ -113,7 +113,8 @@ class AuthContoller extends Controller
     }
 
     public function user(Request $request) {
-        $user = $request->user();
+        $id = $request->user()->id;
+        $user = User::with('photos')->find($id);
         return response()->json([
             'status' => 200,
             'user' => $user
@@ -149,12 +150,58 @@ class AuthContoller extends Controller
 
         User::find($id)->update([
             'name' => $request->name,
-            'email' => $request->email
+            'email' => $request->email,
+            'gender' => $request->gender,
+            'mobile' => $request->mobile,
+            'father_name' => $request->father_name,
+            'date_of_birth' => $request->date_of_birth,
         ]);
 
         return response()->json([
             'status' => 200,
             'message' => 'User Update Success'
+        ]);
+    }
+
+    public function profileUpload(Request $request) {
+        $user = User::find($request->id);
+        $file = $request->file('file');
+        $fileName = time().'.'.$file->getClientOriginalExtension();
+        $file->move('images/users/', $fileName);
+        $user->update([
+            'photo' => $fileName
+        ]);
+
+        Photo::create([
+            'user_id' => $request->id,
+            'name' => $fileName
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Success Image Upload',
+            'path' => $fileName
+        ]);
+    }
+
+    public function deletePhoto($id) {
+        $photo = Photo::find($id);
+        $photo->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Success image delete'
+        ]);
+    }
+
+    public function selectPhoto($id) {
+        $photo = Photo::find($id);
+        $user = User::find(auth()->user()->id);
+        $user->update([
+            'photo' => $photo->name
+        ]);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Success image selected'
         ]);
     }
 

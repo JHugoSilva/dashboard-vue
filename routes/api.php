@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\AuthContoller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,12 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/logout', [AuthContoller::class, 'logout']);
     Route::post('/reset-pass', [AuthContoller::class, 'resetPass']);
     Route::post('/user-update', [AuthContoller::class, 'userUpdate']);
+    Route::post('/profile-upload', [AuthContoller::class, 'profileUpload']);
+    Route::post('/delete-photo/{id}', [AuthContoller::class, 'deletePhoto']);
+    Route::post('/select-photo/{id}', [AuthContoller::class, 'selectPhoto']);
+
+    Route::get('/index', [UserController::class, 'index']);
+    Route::post('/create', [UserController::class, 'store']);
 });
 
 Route::post('/reset-password', [AuthContoller::class, 'resetPassword']);
