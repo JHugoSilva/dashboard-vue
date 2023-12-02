@@ -5,8 +5,9 @@ import axios from 'axios'
 import { toast } from "vue3-toastify";
 import AddUser from './UserAdd.vue'
 
-const users = ref([])
 const isEdit = ref(false)
+const user = ref([])
+const users = ref([])
 const page = ref(1)
 
 const notify = (message) => {
@@ -25,25 +26,25 @@ const notifyErro = (message) => {
 
 const goBack = (event) => {
     isEdit.value = event
+    user.value = false
     getUsers(page)
 }
 
 const addUser = () => {
     isEdit.value = true
-    user.value = {
-
-    }
+    user.value = {}
 }
 
 const getUsers = (page) => {
     axios.get(`index?page=${page}`).then((res) => {
         users.value = res.data.users.data
-        notify(res.data.message)
+        // notify(res.data.message)
     })
 }
 
-const userEdit = (user) => {
-    axios.post(`edit`)
+const userEdit = (userSelect) => {
+    isEdit.value = true
+    user.value = userSelect
 }
 
 onMounted(()=>{
@@ -56,7 +57,7 @@ onMounted(()=>{
     <AddUser v-if="isEdit" :user="user" @goBack="goBack($event)"/>
     <div v-if="!isEdit" class="card o-hidden border-0 shadow-lg my-5">
         <div class="card-header">Users Table</div>
-        <button class="btn btn-primary btn-circle btn-sm float-end" @click="addUser">
+        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="addUser">
             <i class="fas fa-plus"></i>
         </button>
         <div class="card-body p-0">

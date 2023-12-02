@@ -26,8 +26,7 @@ class UserController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                $validator->errors()
-                
+                'errors' => $validator->errors()->all()
             ], 400);
         }
 
@@ -45,6 +44,36 @@ class UserController extends Controller
         return response()->json([
             'status' => 201,
             'message' => 'User Create Success'
+        ]);
+    }
+
+    public function update(Request $request, $id) {
+        $user = User::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => ['required', Rule::unique('users')->ignore($id)]
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->all()
+            ], 400);
+        }
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'gender' => $request->gender,
+            'mobile' => $request->mobile,
+            'father_name' => $request->father_name,
+            'date_of_birth' => $request->date_of_birth,
+            'password' => bcrypt($request->password)
+
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'User Update Success'
         ]);
     }
 }

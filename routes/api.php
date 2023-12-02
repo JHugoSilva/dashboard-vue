@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('/index', [UserController::class, 'index']);
     Route::post('/create', [UserController::class, 'store']);
+    Route::post('/update/{id}', [UserController::class, 'update']);
 });
 
 Route::post('/reset-password', [AuthContoller::class, 'resetPassword']);

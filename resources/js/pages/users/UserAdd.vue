@@ -1,85 +1,19 @@
-<script setup>
-import { ref, watchEffect } from "vue";
-import { toast } from "vue3-toastify";
-const emit = defineEmits(['goBack'])
-const props = defineProps(['user'])
-
-const notify = (message) => {
-    toast.success(message, {
-        autoClose: 3000,
-        position: toast.POSITION.TOP_CENTER
-    })
-}
-
-const notifyErro = (message) => {
-    toast.error(message, {
-        autoClose: 3000,
-        position: toast.POSITION.TOP_CENTER
-    })
-}
-
-const goBack = () => {
-   emit('goBack',false)
-   user.value = []
-}
-
-const user = ref({
-  name: "",
-  email: "",
-  father_name: "",
-  mobile: "",
-  date_of_birth: "",
-  gender:"",
-  password: "",
-  password_confirmation: "",
-});
-
-const genders = ref([
-    {type: 'M'},
-    {type: 'F'}
-])
-
-
-const confirmPassword = () => {
-  if (user.password !== user.password_confirmation) {
-    notifyErro("Password not match");
-  }
-};
-
-const createUser = (evt) => {
-  evt.preventDefault();
-  if (
-    user.name === "" ||
-    user.email === "" ||
-    user.password === "" ||
-    user.password_confirmation === ""
-  ) {
-    notifyErro("Please fill all fields")
-  } else {
-    axios
-      .post("create", user.value)
-      .then((resp) => {
-        notify(resp.data.message)
-        emit('goBack', false)
-      })
-      .catch((err) => {
-        notifyErro(err);
-      });
-  }
-};
-</script>
 <template>
   <div class="container">
     <div class="card o-hidden border-0 shadow-lg my-5">
       <div class="card-body p-0">
         <!-- Nested Row within Card Body -->
+        {{ user.name }}
         <div class="row">
           <div class="col-lg-7">
             <div class="p-5">
               <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                <h1 v-if="!props.user.id" class="h4 text-gray-900 mb-4">
+                  Create an Account!
+                </h1>
+                <h1 v-else class="h4 text-gray-900 mb-4">Update a Account!</h1>
               </div>
-              <form @submit.prevent="createUser" class="user" method="post">
+              <form @submit.prevent="props.user.id ? updateUser($event) : createUser($event)" class="user" method="post">
                 <div class="form-group">
                   <input
                     type="text"
@@ -98,8 +32,8 @@ const createUser = (evt) => {
                     placeholder="Father Name"
                   />
                 </div>
-                 <div class="form-group">
-                 <input
+                <div class="form-group">
+                  <input
                     type="text"
                     v-model="user.mobile"
                     class="form-control form-control-user"
@@ -108,10 +42,16 @@ const createUser = (evt) => {
                   />
                 </div>
                 <div class="form-group">
-                 <select class="form-control"  v-model="user.gender"> 
+                  <select class="form-control" v-model="user.gender">
                     <option disabled="disabled">Escolha uma opção</option>
-                    <option v-for="gender in genders" :key="gender.type" :value="gender.type">{{ gender.type }}</option>
-                 </select>
+                    <option
+                      v-for="gender in genders"
+                      :key="gender.type"
+                      :value="gender.type"
+                    >
+                      {{ gender.type }}
+                    </option>
+                  </select>
                 </div>
                 <div class="form-group">
                   <input
@@ -156,9 +96,9 @@ const createUser = (evt) => {
                   type="submit"
                   class="btn btn-primary btn-user btn-block"
                 >
-                  Create User
+                  {{ props.user.id ? "Update User" : "Create User" }}
                 </button>
-                 <button
+                <button
                   type="button"
                   @click="goBack()"
                   class="btn btn-info btn-user btn-block"
@@ -174,3 +114,107 @@ const createUser = (evt) => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from "vue";
+import { toast } from "vue3-toastify";
+import { watchEffect } from "@vue/runtime-core";
+const emit = defineEmits(["goBack"]);
+const props = defineProps({
+  user: {
+    type: Object,
+    default: "",
+  },
+});
+
+let errorMsg = ref("");
+
+const notify = (message) => {
+  toast.success(message, {
+    autoClose: 3000,
+    position: toast.POSITION.TOP_CENTER,
+  });
+};
+
+const notifyErro = (message) => {
+  toast.error(message, {
+    autoClose: 3000,
+    position: toast.POSITION.TOP_CENTER,
+  });
+};
+
+const goBack = () => {
+  emit("goBack", false);
+  user.value = [];
+};
+
+const user = ref({
+  name: "",
+  email: "",
+  father_name: "",
+  mobile: "",
+  date_of_birth: "",
+  gender: "",
+  password: "",
+  password_confirmation: "",
+});
+
+const genders = ref([{ type: "M" }, { type: "F" }]);
+
+const confirmPassword = () => {
+  if (user.password !== user.password_confirmation) {
+    notifyErro("Password not match");
+  }
+};
+
+const createUser = (evt) => {
+  evt.preventDefault();
+  if (
+    user.name === "" ||
+    user.email === "" ||
+    user.password === "" ||
+    user.password_confirmation === ""
+  ) {
+    notifyErro("Please fill all fields");
+  } else {
+    axios
+      .post("create", user.value)
+      .then((resp) => {
+        notify(resp.data.message);
+        emit("goBack", false);
+      })
+      .catch((err) => {
+        for (let errors of err.response.data.errors) {
+          notifyErro(errors);
+        }
+      });
+  }
+};
+
+const updateUser = (evt) => {
+  evt.preventDefault();
+   axios
+      .post("update/"+props.user.id, user.value)
+      .then((resp) => {
+        notify(resp.data.message);
+        emit("goBack", false);
+      })
+      .catch((err) => {
+        for (let errors of err.response.data.errors) {
+          notifyErro(errors);
+        }
+      });
+};
+
+watchEffect(() => {
+  if (props.user) {
+    user.value.id = props.user.id;
+    user.value.name = props.user.name;
+    user.value.email = props.user.email;
+    user.value.father_name = props.user.father_name;
+    user.value.date_of_birth = props.user.date_of_birth;
+    user.value.gender = props.user.gender;
+    user.value.mobile = props.user.value;
+  }
+});
+</script>
