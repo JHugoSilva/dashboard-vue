@@ -114,7 +114,11 @@ class AuthContoller extends Controller
 
     public function user(Request $request) {
         $id = $request->user()->id;
-        $user = User::with('photos')->find($id);
+        $user = User::with(['photos', 'role' => function($q) {
+            $q->with(['permissions' => function($q) {
+                $q->with('page');
+            }]);
+        }])->find($id);
         return response()->json([
             'status' => 200,
             'user' => $user

@@ -11,6 +11,7 @@ const user = ref("")
 
 axios.get('user').then((resp) => {
     user.value = resp.data.user
+    localStorage.setItem('perUser', JSON.stringify(resp.data.user.role.permissions))
 })
 
 </script>

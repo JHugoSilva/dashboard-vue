@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index() {
 
-        $users = User::paginate(10);
+        $users = User::with(['role'])->paginate(10);
         return response()->json([
             'users' => $users
         ]);

@@ -1,20 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\AuthContoller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', [AuthContoller::class, 'user']);
@@ -28,6 +19,18 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/index', [UserController::class, 'index']);
     Route::post('/create', [UserController::class, 'store']);
     Route::post('/update/{id}', [UserController::class, 'update']);
+
+    Route::get('/pages', [PageController::class, 'index']);
+    Route::post('/create_page', [PageController::class, 'store']);
+    Route::post('/update_page/{id}', [PageController::class, 'update']);
+
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::post('/create', [RoleController::class, 'store']);
+    Route::put('/update_role/{id}', [RoleController::class, 'update']);
+
+    Route::get('/permissions/{roleId}', [PermissionController::class, 'permissionId']);
+    Route::post('/create_permission', [PermissionController::class, 'store']);
+    Route::put('/update_permission/{id}', [PermissionController::class, 'update']);
 });
 
 Route::post('/reset-password', [AuthContoller::class, 'resetPassword']);

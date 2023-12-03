@@ -25,7 +25,8 @@ class User extends Authenticatable
         'gender',
         'mobile',
         'father_name',
-        'date_of_birth'
+        'date_of_birth',
+        'role_id'
     ];
 
     /**
@@ -50,5 +51,9 @@ class User extends Authenticatable
 
     public function photos() {
         return $this->hasMany(Photo::class);
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class);
     }
 }

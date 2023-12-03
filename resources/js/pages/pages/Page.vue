@@ -1,14 +1,12 @@
-
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from 'axios'
 import { toast } from "vue3-toastify";
-import AddUser from './UserAdd.vue'
+import PageAdd from './PageAdd.vue'
 
 const isEdit = ref(false)
-const user = ref([])
-const users = ref([])
-const page = ref(1)
+const page = ref([])
+const pages = ref([])
 
 const notify = (message) => {
     toast.success(message, {
@@ -26,38 +24,37 @@ const notifyErro = (message) => {
 
 const goBack = (event) => {
     isEdit.value = event
-    user.value = false
-    getUsers(page)
+    page.value = false
+    getpages()
 }
 
-const addUser = () => {
+const pageAdd = () => {
     isEdit.value = true
-    user.value = {}
+    page.value = {}
 }
 
-const getUsers = (page) => {
-    axios.get(`index?page=${page}`).then((res) => {
-        users.value = res.data.users.data
-        // notify(res.data.message)
+const getpages = () => {
+    axios.get('pages').then((res) => {
+        pages.value = res.data.pages
     })
 }
 
-const userEdit = (userSelect) => {
+const pageEdit = (pageSelect) => {
     isEdit.value = true
-    user.value = userSelect
+    page.value = pageSelect
 }
 
 onMounted(()=>{
-    getUsers(page)
+    getpages()
 })
 
 </script>
 <template>
 <div>
-    <AddUser v-if="isEdit" :user="user" @goBack="goBack($event)"/>
+    <PageAdd v-if="isEdit" :page="page" @goBack="goBack($event)"/>
     <div v-if="!isEdit" class="card o-hidden border-0 shadow-lg my-5">
-        <div class="card-header">Users Table</div>
-        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="addUser">
+        <div class="card-header">pages Table</div>
+        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="pageAdd">
             <i class="fas fa-plus"></i>
         </button>
         <div class="card-body p-0">
@@ -67,30 +64,32 @@ onMounted(()=>{
                   <th>Actions</th>
                   <th>Id</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Mobile</th>
-                  <th>Role</th>
+                  <th>Icon</th>
+                  <th>Path</th>
+                  <th>Order</th>
+                  <th>Page</th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                  <tr v-for="user in users" :key="user.id">
+                  <tr v-for="page in pages" :key="page.id">
                     <td>
                       <button hidden
                         class="btn btn-danger btn-circle btn-sm"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
-                      <button @click="userEdit(user)"
+                      <button @click="pageEdit(page)"
                         class="btn btn-info btn-circle btn-sm"
                       >
                         <i class="fas fa-pencil"></i>
                       </button>
                     </td>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.mobile }}</td>
-                    <td>{{ user.role?.name_role }}</td>
+                    <td>{{ page.id }}</td>
+                    <td>{{ page.name }}</td>
+                    <td>{{ page.icon }}</td>
+                    <td>{{ page.path }}</td>
+                    <td>{{ page.order }}</td>
+                    <td>{{ page.page_id }}</td>
                   </tr>
                 </tbody>
               </table>

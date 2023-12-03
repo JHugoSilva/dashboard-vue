@@ -3,7 +3,8 @@
     <div class="card o-hidden border-0 shadow-lg my-5">
       <div class="card-body p-0">
         <!-- Nested Row within Card Body -->
-        {{ user.name }}
+        {{  user.roles.value }} 
+        {{ props.user.role_id }}
         <div class="row">
           <div class="col-lg-7">
             <div class="p-5">
@@ -19,7 +20,6 @@
                     type="text"
                     v-model="user.name"
                     class="form-control form-control-user"
-                    id="exampleFirstName"
                     placeholder="Name"
                   />
                 </div>
@@ -28,7 +28,6 @@
                     type="text"
                     v-model="user.father_name"
                     class="form-control form-control-user"
-                    id="exampleFirstName"
                     placeholder="Father Name"
                   />
                 </div>
@@ -37,7 +36,6 @@
                     type="text"
                     v-model="user.mobile"
                     class="form-control form-control-user"
-                    id="exampleFirstName"
                     placeholder="Mobile"
                   />
                 </div>
@@ -58,7 +56,6 @@
                     type="date"
                     v-model="user.date_of_birth"
                     class="form-control form-control-user"
-                    id="exampleFirstName"
                     placeholder="Date of Birth"
                   />
                 </div>
@@ -67,7 +64,6 @@
                     type="email"
                     v-model="user.email"
                     class="form-control form-control-user"
-                    id="exampleInputEmail"
                     placeholder="Email Address"
                   />
                 </div>
@@ -77,8 +73,8 @@
                       type="password"
                       v-model="user.password"
                       class="form-control form-control-user"
-                      id="exampleInputPassword"
                       placeholder="Password"
+                      autocomplete="0"
                     />
                   </div>
                   <div class="col-sm-6">
@@ -87,8 +83,8 @@
                       @change="confirmPassword"
                       v-model="user.password_confirmation"
                       class="form-control form-control-user"
-                      id="exampleRepeatPassword"
                       placeholder="Repeat Password"
+                      autocomplete="0"
                     />
                   </div>
                 </div>
@@ -116,9 +112,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import { toast } from "vue3-toastify";
-import { watchEffect } from "@vue/runtime-core";
+// import { onMounted, watchEffect } from "@vue/runtime-core";
+import axios from "axios";
 const emit = defineEmits(["goBack"]);
 const props = defineProps({
   user: {
@@ -126,8 +123,6 @@ const props = defineProps({
     default: "",
   },
 });
-
-let errorMsg = ref("");
 
 const notify = (message) => {
   toast.success(message, {
@@ -145,7 +140,7 @@ const notifyErro = (message) => {
 
 const goBack = () => {
   emit("goBack", false);
-  user.value = [];
+  user.value = "";
 };
 
 const user = ref({
@@ -157,7 +152,16 @@ const user = ref({
   gender: "",
   password: "",
   password_confirmation: "",
+  roles: ""
 });
+
+const getRoles = () => {
+  axios.get('roles').then((res) => {
+    user.roles = res.data.roles
+  }).catch((err) => {
+    console.log(err)
+  })
+}
 
 const genders = ref([{ type: "M" }, { type: "F" }]);
 
@@ -206,15 +210,22 @@ const updateUser = (evt) => {
       });
 };
 
+
+
 watchEffect(() => {
   if (props.user) {
-    user.value.id = props.user.id;
-    user.value.name = props.user.name;
-    user.value.email = props.user.email;
-    user.value.father_name = props.user.father_name;
-    user.value.date_of_birth = props.user.date_of_birth;
-    user.value.gender = props.user.gender;
-    user.value.mobile = props.user.value;
+      user.value.id = props.user.id;
+      user.value.name = props.user.name;
+      user.value.email = props.user.email;
+      user.value.father_name = props.user.father_name;
+      user.value.date_of_birth = props.user.date_of_birth;
+      user.value.gender = props.user.gender;
+      user.value.mobile = props.user.mobile;
+      // user.roles.value = props.user.role_id;
   }
 });
+
+onMounted(async ()=>{
+  await getRoles()
+})
 </script>

@@ -1,14 +1,14 @@
-
 <script setup>
 import { onMounted, ref } from "vue";
-import axios from 'axios'
 import { toast } from "vue3-toastify";
-import AddUser from './UserAdd.vue'
+import axios from 'axios'
 
 const isEdit = ref(false)
-const user = ref([])
-const users = ref([])
-const page = ref(1)
+const permission = ref({})
+const permissions = ref([])
+const role_id = ref(0)
+const roles = ref([])
+const pages = ref([])
 
 const notify = (message) => {
     toast.success(message, {
@@ -24,40 +24,42 @@ const notifyErro = (message) => {
     })
 }
 
-const goBack = (event) => {
-    isEdit.value = event
-    user.value = false
-    getUsers(page)
-}
-
-const addUser = () => {
-    isEdit.value = true
-    user.value = {}
-}
-
-const getUsers = (page) => {
-    axios.get(`index?page=${page}`).then((res) => {
-        users.value = res.data.users.data
-        // notify(res.data.message)
+const getPermissions = () => {
+    axios.get(`permissions/${role_id.value}`).then((res) => {
+        permissions.value = res.data.Permissions
     })
 }
 
-const userEdit = (userSelect) => {
-    isEdit.value = true
-    user.value = userSelect
+const getRoles = () => {
+  axios.get('roles').then((res) => {
+    roles.value = res.data.roles
+    notify(res.data.message)
+  })
 }
 
-onMounted(()=>{
-    getUsers(page)
+const getPages = () => {
+  axios.get('pages').then((res)=>{
+    pages.value = res.data.pages
+
+  })
+}
+
+const permissionEdit = (PermissionSelect) => {
+    isEdit.value = true
+    permission.value = PermissionSelect
+}
+
+onMounted(async ()=> {
+    await getPermissions()
+    await getRoles()
 })
 
 </script>
 <template>
 <div>
-    <AddUser v-if="isEdit" :user="user" @goBack="goBack($event)"/>
     <div v-if="!isEdit" class="card o-hidden border-0 shadow-lg my-5">
-        <div class="card-header">Users Table</div>
-        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="addUser">
+        <div class="card-header">Permissions Table</div>
+        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="PermissionAdd">
             <i class="fas fa-plus"></i>
         </button>
         <div class="card-body p-0">
@@ -67,30 +69,32 @@ onMounted(()=>{
                   <th>Actions</th>
                   <th>Id</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Mobile</th>
-                  <th>Role</th>
+                  <th>Icon</th>
+                  <th>Path</th>
+                  <th>Order</th>
+                  <th>Permission</th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                  <tr v-for="user in users" :key="user.id">
+                  <tr v-for="permission in permissions" :key="permission.id">
                     <td>
                       <button hidden
                         class="btn btn-danger btn-circle btn-sm"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
-                      <button @click="userEdit(user)"
+                      <button @click="permissionEdit(Permission)"
                         class="btn btn-info btn-circle btn-sm"
                       >
                         <i class="fas fa-pencil"></i>
                       </button>
                     </td>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.mobile }}</td>
-                    <td>{{ user.role?.name_role }}</td>
+                    <td>{{ permission.id }}</td>
+                    <td>{{ permission.name }}</td>
+                    <td>{{ permission.icon }}</td>
+                    <td>{{ permission.path }}</td>
+                    <td>{{ permission.order }}</td>
+                    <td>{{ permission.permission_id }}</td>
                   </tr>
                 </tbody>
               </table>

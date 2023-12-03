@@ -1,14 +1,12 @@
-
 <script setup>
 import { onMounted, ref } from "vue";
 import axios from 'axios'
 import { toast } from "vue3-toastify";
-import AddUser from './UserAdd.vue'
+import RoleAdd from './RoleAdd.vue'
 
 const isEdit = ref(false)
-const user = ref([])
-const users = ref([])
-const page = ref(1)
+const role = ref([])
+const roles = ref([])
 
 const notify = (message) => {
     toast.success(message, {
@@ -26,38 +24,39 @@ const notifyErro = (message) => {
 
 const goBack = (event) => {
     isEdit.value = event
-    user.value = false
-    getUsers(page)
+    role.value = false
+    getroles()
 }
 
-const addUser = () => {
+const roleAdd = () => {
     isEdit.value = true
-    user.value = {}
+    role.value = {}
 }
 
-const getUsers = (page) => {
-    axios.get(`index?page=${page}`).then((res) => {
-        users.value = res.data.users.data
+const getroles = () => {
+    axios.get('roles').then((res) => {
+        roles.value = res.data.roles
+        console.log(res.data.roles)
         // notify(res.data.message)
     })
 }
 
-const userEdit = (userSelect) => {
+const roleEdit = (roleSelect) => {
     isEdit.value = true
-    user.value = userSelect
+    role.value = roleSelect
 }
 
 onMounted(()=>{
-    getUsers(page)
+    getroles()
 })
 
 </script>
 <template>
 <div>
-    <AddUser v-if="isEdit" :user="user" @goBack="goBack($event)"/>
+    <RoleAdd v-if="isEdit" :role="role" @goBack="goBack($event)"/>
     <div v-if="!isEdit" class="card o-hidden border-0 shadow-lg my-5">
-        <div class="card-header">Users Table</div>
-        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="addUser">
+        <div class="card-header">roles Table</div>
+        <button class="btn btn-primary btn-circle btn-sm float-end p-3 m-2" @click="roleAdd">
             <i class="fas fa-plus"></i>
         </button>
         <div class="card-body p-0">
@@ -67,30 +66,24 @@ onMounted(()=>{
                   <th>Actions</th>
                   <th>Id</th>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Mobile</th>
-                  <th>Role</th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                  <tr v-for="user in users" :key="user.id">
+                  <tr v-for="role in roles" :key="role.id">
                     <td>
                       <button hidden
                         class="btn btn-danger btn-circle btn-sm"
                       >
                         <i class="fas fa-trash"></i>
                       </button>
-                      <button @click="userEdit(user)"
+                      <button @click="roleEdit(role)"
                         class="btn btn-info btn-circle btn-sm"
                       >
                         <i class="fas fa-pencil"></i>
                       </button>
                     </td>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.mobile }}</td>
-                    <td>{{ user.role?.name_role }}</td>
+                    <td>{{ role.id }}</td>
+                    <td>{{ role.name_role }}</td>
                   </tr>
                 </tbody>
               </table>
